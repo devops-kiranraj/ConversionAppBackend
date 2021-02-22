@@ -30,7 +30,8 @@ namespace ConversionApp.ForexDataLoader
 
             services.AddSingleton<IConfiguration>(configuration);
             services.AddSingleton<ICurrencyConversionHandler, CurrencyConversionHandler>();
-            services.AddDbContext<ConversionAppContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConversionAppContext")));
+            services.AddDbContext<ConversionAppContext>(options => options.UseSqlServer(configuration.GetConnectionString("ConversionAppContext"),
+                options => options.EnableRetryOnFailure()));
             services.AddSingleton<IExchangeRateDataStoreServices, ExchangeRateDataStoreServices>();
             services.AddHttpClient<IFixerDataService, FixerDataService>(client =>
             {

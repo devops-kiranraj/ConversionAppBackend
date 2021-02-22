@@ -9,18 +9,6 @@ namespace ConversionApp.Persistance.DataStore.Entities
 {
     public static class DataModelFactory
     {
-        public static List<CurrencyExchangeRateEntity> Create(ConversionRateDomainModel conversionRateDomainModel)
-        {
-            List<CurrencyExchangeRateEntity> currencyRates = new List<CurrencyExchangeRateEntity>();
-            if (conversionRateDomainModel != null && conversionRateDomainModel.Rates != null && conversionRateDomainModel.Rates.Any())
-            {
-                var data = conversionRateDomainModel.Rates.ToList();
-                var conversionRateEntity = data?.Select(x => Create(x.Key, x.Value, conversionRateDomainModel.Date)).ToList();
-                return conversionRateEntity;
-            }
-            return default;
-        }
-
         public static List<CurrencyForexRateEntity> Create(ConversionRateDomainModel conversionRateDomainModel, IEnumerable<CurrencyEntity> currencies)
         {
             List<CurrencyForexRateEntity> currencyRates = new List<CurrencyForexRateEntity>();
@@ -45,27 +33,13 @@ namespace ConversionApp.Persistance.DataStore.Entities
             return default;
         }
 
-        public static List<CurrencyConversionDomainModel> Create(IEnumerable<CurrencyExchangeRateEntity> conversionRateEntity)
+        public static List<CurrencyConversionDomainModel> Create(IEnumerable<CurrencyForexRateEntity> conversionRateEntity)
         {
             if (conversionRateEntity != null && conversionRateEntity.Any())
             {
                 return conversionRateEntity.Select(Create).ToList();
             }
             return default;
-        }
-
-        private static CurrencyExchangeRateEntity Create(string currencyCode, decimal rate,string date)
-        {
-            if(DateTime.TryParse(date,out DateTime dateTime))
-            {
-                return new CurrencyExchangeRateEntity
-                {
-                    Date = dateTime,
-                    Curerncy = currencyCode,
-                    ConversionRate = rate
-                };
-            }
-            return null;
         }
 
         private static CurrencyForexRateEntity Create(CurrencyEntity currency, decimal rate, string date, string currencyCode)
@@ -94,14 +68,14 @@ namespace ConversionApp.Persistance.DataStore.Entities
             return null;
         }
 
-        private static CurrencyConversionDomainModel Create(CurrencyExchangeRateEntity currencyExchangeRateEntity)
+        private static CurrencyConversionDomainModel Create(CurrencyForexRateEntity currencyExchangeRateEntity)
         {
             if (currencyExchangeRateEntity != null)
             {
                 return new CurrencyConversionDomainModel
                 {
                     Date = currencyExchangeRateEntity.Date.ToString(MessageConstants.DATEFORMAT),
-                    TargetCurrency = currencyExchangeRateEntity.Curerncy,
+                    TargetCurrency = currencyExchangeRateEntity.Currency.Code,
                     TargetAmount = currencyExchangeRateEntity.ConversionRate
                 };
             }
